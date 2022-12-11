@@ -1,0 +1,29 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.card>* {
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.mat-card-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around!important;
+}
+
+.mat-card-actions .mat-stroked-button {
+    margin: 0;
+}

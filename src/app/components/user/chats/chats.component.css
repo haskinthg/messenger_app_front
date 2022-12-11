@@ -1,0 +1,15 @@
+.card {
+    padding: 5px;
+    height: 100%;
+}
+
+.card > * {
+    width: 100%;
+}
+
+.settings-search {
+    display: flex;
+    justify-content: space-around;
+    align-items:center;
+    margin-bottom: 5px;
+}

@@ -1,0 +1,37 @@
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 5px;
+    height: 100%;
+}
+
+.settings {
+    display: flex;
+    justify-content: space-between;
+}
+
+
+.conv {
+    height: 100%;
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+}
+
+.msg-sender {
+    background: #303030;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.msg-sender .area-form {
+    width: 100%;
+}
+
+textarea {
+    resize: none!important;
+}

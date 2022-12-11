@@ -1,0 +1,26 @@
+<mat-card class="card">
+
+    <mat-card-header>
+        <mat-card-title>Регистрация</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content class="card-content">
+        <mat-form-field appearance="outline">
+            <mat-label>Имя пользователя</mat-label>
+            <input matInput type="text" placeholder="Аккаунт" [(ngModel)]="user.login">
+        </mat-form-field>
+        <mat-error *ngIf="check">Неправильное имя или пароль</mat-error>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Пароль</mat-label>
+            <input matInput type="password" placeholder="Пароль" [(ngModel)]="user.password">
+        </mat-form-field>
+
+        <mat-error *ngIf="check">Неправильное имя или пароль</mat-error>
+    </mat-card-content>
+
+    <mat-card-actions>
+        <button mat-flat-button color="accent" (click)="a()" >Продолжить</button>
+        <button mat-stroked-button  color="accent" (click)="tolog()">Вход</button>
+    </mat-card-actions>
+</mat-card>

@@ -1,0 +1,18 @@
+.messanger-grid {
+    display: grid;
+    grid-template-columns: 300px 3fr;
+    grid-template-areas: 
+    "chats msgs";
+    height: 98%;
+}
+
+.chats {
+    grid-area: "chats";
+    margin: 10px;
+}
+
+.msgs {
+    grid-area: "msgs";
+    margin: 10px;
+    margin-left: 0;
+}
