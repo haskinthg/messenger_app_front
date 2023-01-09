@@ -13,7 +13,11 @@
     </div>
 
 
-    <div class="conv">
+    <div class="conv"  
+    infinite-scroll
+    [infiniteScrollDistance]="distance"
+    [infiniteScrollThrottle]="throttle"
+    (scrolled)="onScroll()">
         <mat-card *ngFor="let msg of msgs" class="{{messageSide(msg)}}">
             <mat-card-header class="message-header">
                 <div class="msg-info">{{msg.user.username}}</div>

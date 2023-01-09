@@ -17,6 +17,14 @@ export class MessangesComponent implements OnInit {
 
   constructor(private service: MessageService, private dataservice: SendDataService) { }
 
+  // для скроллинга
+  distance: number = 10;
+  throttle: number = 0;
+  onScroll() {
+    console.log("need scroll");
+  }
+  // 
+
   msgs: Message[] = [];
 
   valueMessage: string;
