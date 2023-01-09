@@ -1,7 +1,10 @@
 <mat-card class="card">
     <div>
         <div class="settings">
-            <p>photo + username +?status</p>
+            <div class="horizontal-flex">
+                <img class="message-user-photo size-x2" src="https://phonoteka.org/uploads/posts/2021-07/1625161520_50-phonoteka-org-p-zastavka-na-komp-krasivie-zastavki-56.jpg" alt="user-photo">
+                <div class="msg-info">username</div>
+            </div>
             <button mat-icon-button color="basic">
                 <mat-icon>more_vert</mat-icon>
             </button>
@@ -11,15 +14,23 @@
 
 
     <div class="conv">
-
+        <mat-card *ngFor="let msg of msgs" class="{{messageSide(msg)}}">
+            <mat-card-header class="message-header">
+                <div class="msg-info">{{msg.user.username}}</div>
+                <img class="message-user-photo" src="{{msgs.user.photo}}" alt="">
+            </mat-card-header>
+            <mat-card-content>
+                <div>{{msg.value}}</div>
+            </mat-card-content>
+        </mat-card>
     </div>
 
     <mat-card class="msg-sender">
         <mat-form-field style="margin-bottom: -1.25em; margin-right: 15px;" class="area-form" appearance="outline">
             <mat-label>Сообщение</mat-label>
-            <textarea rows="2" style="overflow: hidden" matInput></textarea>
+            <textarea rows="2" style="overflow: hidden" [(ngModel)]="valueMessage" matInput></textarea>
         </mat-form-field>
-        <button  mat-fab color="accent">
+        <button  mat-fab color="accent" (click)="sendMessage()">
             <mat-icon>send</mat-icon>
         </button>
     </mat-card>

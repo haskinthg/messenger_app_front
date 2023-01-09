@@ -3,17 +3,23 @@
         <button mat-icon-button color="basic">
             <mat-icon>settings</mat-icon>
         </button>
-        <mat-form-field  class="search-field" appearance="outline" style="margin-bottom: -1.25em">
+        <mat-form-field class="search-field" appearance="outline" style="margin-bottom: -1.25em">
             <mat-label>
                 <mat-icon>search</mat-icon>
             </mat-label>
-            <input  matInput type="text" placeholder="Поиск" [(ngModel)]="search">
+            <input matInput type="text" placeholder="Поиск" [(ngModel)]="search">
         </mat-form-field>
     </div>
-    <mat-divider></mat-divider>
-    <div *ngFor="let conv in conversations" class="chat_entity">
-        <!-- something -->
-        <mat-divider></mat-divider>
+    <div *ngFor="let chat of chats" class="chat_entity" (click)="openChat(chat)">
+        <mat-card class="user-card">
+            <mat-card-content class="info">
+                <img class="user-photo"
+                    src="https://phonoteka.org/uploads/posts/2021-07/1625161520_50-phonoteka-org-p-zastavka-na-komp-krasivie-zastavki-56.jpg"
+                    alt="user-photo">
+                <div class="user-name">{{chat.users[0].username}}</div>
+                <div class="last-msg-text">{{lastMessage(chat.users[0].lastMessage)}}</div>
+            </mat-card-content>
+        </mat-card>
     </div>
-    
+
 </mat-card>

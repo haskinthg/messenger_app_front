@@ -20,6 +20,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { ChatsComponent } from './components/user/chats/chats.component';
 import { MessangesComponent } from './components/user/messanges/messanges.component'
 import { UserComponent } from './components/user/user.component';
+import { SessionStorageService } from 'angular-web-storage';
 
 
 @NgModule({
@@ -45,7 +46,7 @@ import { UserComponent } from './components/user/user.component';
     MatIconModule,
     MatDividerModule,
   ],
-  providers: [],
+  providers: [ SessionStorageService ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

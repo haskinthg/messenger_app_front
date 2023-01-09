@@ -11,6 +11,11 @@
     justify-content: space-between;
 }
 
+.horizontal-flex {
+    display: flex;
+    gap:10px;
+}
+
 
 .conv {
     height: 100%;
@@ -34,4 +39,34 @@
 
 textarea {
     resize: none!important;
+}
+
+
+.conv .message-card {
+    width: min-content;
+    background: #303030;
+    margin-top: 20px;
+}
+
+.conv .message-card.right {
+    align-self: flex-end;
+}
+
+.message-card .message-header {
+    gap:10px;
+}
+
+.msg-info {
+    color: rgb(212, 211, 211);
+}
+
+.message-user-photo {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.size-x2 {
+    width: 35px;
+    height: 35px;
 }

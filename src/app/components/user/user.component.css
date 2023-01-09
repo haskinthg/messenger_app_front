@@ -9,6 +9,7 @@
 .chats {
     grid-area: "chats";
     margin: 10px;
+    margin-bottom: 0;
 }
 
 .msgs {

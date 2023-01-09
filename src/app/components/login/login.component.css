@@ -18,12 +18,18 @@
     justify-content: center;
 }
 
-.mat-card-actions {
+.actions {
     display: flex;
     flex-direction: row;
     justify-content: space-around!important;
 }
 
-.mat-card-actions .mat-stroked-button {
-    margin: 0;
+.actions:last-child {
+    margin-bottom: 0px!important;
+}
+
+.msg-type {
+    width: inherit;
+    text-align: center;
+    width: 200px;
 }

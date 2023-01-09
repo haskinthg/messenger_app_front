@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/auth/auth.service';
+import {Credential} from './../../models/credential'
 
 @Component({
   selector: 'app-login',
@@ -9,25 +11,25 @@ import { Router } from '@angular/router';
 
 export class LoginComponent implements OnInit {
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private authService: AuthService) { }
 
-  check: boolean = false;
-  user: User =  new User();;
+  errorAuth: boolean;
+  credential: Credential;
 
   ngOnInit(): void {
+    this.authService.clearLoginData();
+    this.credential = new Credential();
+    this.authService.logout();
   }
 
-  a() {
-    console.log(this.check)
+  login() {
+    this.authService.authenticate(this.credential, () => {
+      this.errorAuth = true;
+    });
   }
 
   toreg() {
     this.router.navigate(['register']);
   }
 
-}
-
-export class User {
-  login:string;
-  password:string;
 }

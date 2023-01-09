@@ -7,20 +7,18 @@
     <mat-card-content class="card-content">
         <mat-form-field appearance="outline">
             <mat-label>Имя пользователя</mat-label>
-            <input matInput type="text" placeholder="Аккаунт" [(ngModel)]="user.login">
+            <input matInput type="text" placeholder="Аккаунт" [(ngModel)]="credential.username">
         </mat-form-field>
-        <mat-error *ngIf="check">Неправильное имя или пароль</mat-error>
-
         <mat-form-field appearance="outline">
             <mat-label>Пароль</mat-label>
-            <input matInput type="password" placeholder="Пароль" [(ngModel)]="user.password">
+            <input  matInput type="password" placeholder="Пароль" [(ngModel)]="credential.password">
         </mat-form-field>
 
-        <mat-error *ngIf="check">Неправильное имя или пароль</mat-error>
+        <mat-error class="msg-type" *ngIf="errorAuth">Неправильное имя пользователя или пароль</mat-error>
     </mat-card-content>
 
-    <mat-card-actions>
-        <button mat-flat-button color="accent" (click)="a()" >Войти</button>
+    <mat-card-actions class="actions">
         <button mat-stroked-button  color="accent" (click)="toreg()">Регистрация</button>
+        <button mat-flat-button color="accent" (click)="login()" >Войти</button>
     </mat-card-actions>
 </mat-card>
