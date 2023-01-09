@@ -13,12 +13,12 @@
 
 .horizontal-flex {
     display: flex;
-    gap:10px;
+    gap: 10px;
 }
 
 
-.conv {
-    height: 100%;
+#conv {
+    height: 70vh;
     margin: 10px;
     display: flex;
     flex-direction: column;
@@ -38,22 +38,29 @@
 }
 
 textarea {
-    resize: none!important;
+    resize: none !important;
 }
 
+:host .cdk-virtual-scroll-content-wrapper {
+    position: relative;
+}
 
-.conv .message-card {
-    width: min-content;
+#conv .message-card {
+    width: 50%;
     background: #303030;
     margin-top: 20px;
 }
 
-.conv .message-card.right {
+#conv .message-card.right {
     align-self: flex-end;
 }
 
+.mat-card {
+    padding: 5px;
+}
+
 .message-card .message-header {
-    gap:10px;
+    gap: 10px;
 }
 
 .msg-info {
@@ -69,4 +76,17 @@ textarea {
 .size-x2 {
     width: 35px;
     height: 35px;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    overflow-y: scroll;
+    background: grey;
+    box-shadow: inset 0 0 4px #707070;
+    border-radius: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #69f0ae;
+    border-radius: 12px;
 }

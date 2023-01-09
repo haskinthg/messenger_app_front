@@ -13,21 +13,17 @@
     </div>
 
 
-    <div class="conv"  
-    infinite-scroll
-    [infiniteScrollDistance]="distance"
-    [infiniteScrollThrottle]="throttle"
-    (scrolled)="onScroll()">
-        <mat-card *ngFor="let msg of msgs" class="{{messageSide(msg)}}">
+    <cdk-virtual-scroll-viewport itemSize="65" id="conv"  >
+        <mat-card *cdkVirtualFor="let msg of msgs" class="{{messageSide(msg)}} messange-card">
             <mat-card-header class="message-header">
                 <div class="msg-info">{{msg.user.username}}</div>
-                <img class="message-user-photo" src="{{msgs.user.photo}}" alt="">
+                <img class="message-user-photo" src="https://www.defuscolaw.com/wp-content/uploads/2021/04/QuestionsPersonalInjuryLaw-scaled-e1619806319768.jpeg" alt="">
             </mat-card-header>
             <mat-card-content>
                 <div>{{msg.value}}</div>
             </mat-card-content>
         </mat-card>
-    </div>
+    </cdk-virtual-scroll-viewport>
 
     <mat-card class="msg-sender">
         <mat-form-field style="margin-bottom: -1.25em; margin-right: 15px;" class="area-form" appearance="outline">

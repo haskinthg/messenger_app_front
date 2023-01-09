@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, Input, OnInit } from '@angular/core';
 import { Chat } from 'src/app/models/chat/chat';
 import { Message } from 'src/app/models/message/message';
 import { MessageStatus } from 'src/app/models/message/messageStatus';
@@ -38,6 +38,12 @@ export class MessangesComponent implements OnInit {
     // this.service.getMessageByChatId(this.currentChat.id);
   }
 
+  ScrollToBottom() {
+    const container = document.getElementById("conv");
+    (container as HTMLElement).scrollTop = (container as HTMLElement).scrollHeight;
+    console.log(container);
+  }
+
   messageSide(msg: Message): string {
     if (msg.user.username === this.service.username)
       return 'message-card right';
@@ -51,8 +57,9 @@ export class MessangesComponent implements OnInit {
     if (this.currentChat != undefined)
       this.service.getMessageByChatId(this.currentChat.id).subscribe(data => {
         this.msgs = data;
-        console.log("data ",data);
+        console.log("data ", data);
       });
+    this.ScrollToBottom();
   }
 
   newMessage(msg: WebSocketObject<Message>) {

@@ -13,7 +13,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatTableModule} from '@angular/material/table';
 import {MatIconModule} from '@angular/material/icon';
 import {MatDividerModule} from '@angular/material/divider';
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import {ScrollingModule} from '@angular/cdk/scrolling';
 
 
 import { LoginComponent } from './components/login/login.component';
@@ -46,7 +46,7 @@ import { SessionStorageService } from 'angular-web-storage';
     AppRoutingModule,
     MatIconModule,
     MatDividerModule,
-    InfiniteScrollModule
+    ScrollingModule
   ],
   providers: [ SessionStorageService ],
   bootstrap: [AppComponent]
