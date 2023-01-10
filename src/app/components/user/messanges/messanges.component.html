@@ -1,9 +1,9 @@
 <mat-card class="card">
-    <div>
+    <div *ngIf="currentChat!=undefined">
         <div class="settings">
             <div class="horizontal-flex">
                 <img class="message-user-photo size-x2" src="https://phonoteka.org/uploads/posts/2021-07/1625161520_50-phonoteka-org-p-zastavka-na-komp-krasivie-zastavki-56.jpg" alt="user-photo">
-                <div class="msg-info">username</div>
+                <div class="msg-info">{{nameChat()}}</div>
             </div>
             <button mat-icon-button color="basic">
                 <mat-icon>more_vert</mat-icon>
@@ -11,24 +11,35 @@
         </div>
         <mat-divider></mat-divider>
     </div>
+    <div *ngIf="currentChat===undefined"
+    style="position: absolute; top:50%; left:40%; color: gray; font-size: 2em; text-align: center;">Выберите чат</div>
 
 
-    <cdk-virtual-scroll-viewport itemSize="65" id="conv"  >
-        <mat-card *cdkVirtualFor="let msg of msgs" class="{{messageSide(msg)}} messange-card">
+    <div id="conv" *ngIf="msgs.length!=0"
+    infinite-scroll
+    [infiniteScrollDistance]="distance"
+    [infiniteScrollThrottle]="throttle"
+    (scrolledUp)="onScroll()"
+    [scrollWindow]="false">
+        <mat-card *ngFor="let msg of msgs" class="{{messageSide(msg)}} messange-card">
             <mat-card-header class="message-header">
+              <div class="time">{{dateTime(msg.dateTime)}}</div>
+              <div class="usermsg">
                 <div class="msg-info">{{msg.user.username}}</div>
                 <img class="message-user-photo" src="https://www.defuscolaw.com/wp-content/uploads/2021/04/QuestionsPersonalInjuryLaw-scaled-e1619806319768.jpeg" alt="">
+              </div>
             </mat-card-header>
             <mat-card-content>
-                <div>{{msg.value}}</div>
+                <div class="msg-text">{{msg.value}}</div>
             </mat-card-content>
         </mat-card>
-    </cdk-virtual-scroll-viewport>
+    </div>
+    <div class="conv"  *ngIf="msgs.length===0"></div>
 
-    <mat-card class="msg-sender">
+    <mat-card class="msg-sender" *ngIf="currentChat!=undefined">
         <mat-form-field style="margin-bottom: -1.25em; margin-right: 15px;" class="area-form" appearance="outline">
             <mat-label>Сообщение</mat-label>
-            <textarea rows="2" style="overflow: hidden" [(ngModel)]="valueMessage" matInput></textarea>
+            <textarea rows="2" style="overflow: hidden" [(ngModel)]="msg.value" matInput></textarea>
         </mat-form-field>
         <button  mat-fab color="accent" (click)="sendMessage()">
             <mat-icon>send</mat-icon>

@@ -20,10 +20,10 @@
 
 .user-name {
     color: rgb(212, 211, 211);
-    font-size:medium;
+    font-size:14px;
     grid-area: username;
     margin: 0;
-    padding: 0;
+    padding: 5px;
 }
 
 .user-card {
@@ -50,10 +50,10 @@
     display: grid;
     margin: 0;
     padding: 0;
-    grid-template-areas: 
+    grid-template-areas:
     "photo username"
     "photo text";
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 1fr 3fr;
 }
 
 .last-msg-text {

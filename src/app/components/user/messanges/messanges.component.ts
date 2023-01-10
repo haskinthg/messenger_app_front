@@ -1,3 +1,4 @@
+import { MinioService } from './../../../services/minio.service';
 import { AfterViewChecked, Component, Input, OnInit } from '@angular/core';
 import { Chat } from 'src/app/models/chat/chat';
 import { Message } from 'src/app/models/message/message';
@@ -15,33 +16,40 @@ import { SendDataService } from 'src/app/services/send-data.service';
 })
 export class MessangesComponent implements OnInit {
 
-  constructor(private service: MessageService, private dataservice: SendDataService) { }
+  constructor(private service: MessageService, private dataservice: SendDataService, private minioService: MinioService) { }
 
   // для скроллинга
-  distance: number = 10;
-  throttle: number = 0;
+  distance: number = 2;
+  throttle: number = 50;
+  page: number = 0;
+  size: number = 20;
+
+  countMsgs: number = 0;
+
   onScroll() {
-    console.log("need scroll");
+    this.page++;
+    console.log("scroll", this.page);
+    this.service.getMessagesByChatId(this.currentChat.id, this.page, this.size).subscribe(data => {
+      this.msgs = [...data, ...this.msgs];
+    });
+    setTimeout(() => console.log(this.msgs), 200);
   }
-  // 
+  //
 
   msgs: Message[] = [];
 
-  valueMessage: string;
 
   @Input() currentChat: Chat;
 
   ngOnInit(): void {
     this.dataservice.chat$.subscribe((chat) => this.changedChat(chat))
     this.service.setComp(this);
-    // this.service.setComp(this);
-    // this.service.getMessageByChatId(this.currentChat.id);
   }
 
   ScrollToBottom() {
     const container = document.getElementById("conv");
-    (container as HTMLElement).scrollTop = (container as HTMLElement).scrollHeight;
-    console.log(container);
+    setTimeout(() => (container as HTMLElement).scrollTop = (container as HTMLElement).scrollHeight, 50);
+
   }
 
   messageSide(msg: Message): string {
@@ -52,14 +60,15 @@ export class MessangesComponent implements OnInit {
   }
 
   changedChat(chat: Chat) {
+    this.msg = new Message();
+    this.page = 0;
     this.currentChat = chat;
-    console.log(this.currentChat, this.msgs);
+    console.log(this.page);
     if (this.currentChat != undefined)
-      this.service.getMessageByChatId(this.currentChat.id).subscribe(data => {
+      this.service.getMessagesByChatId(this.currentChat.id, this.page, this.size).subscribe(data => {
         this.msgs = data;
-        console.log("data ", data);
       });
-    this.ScrollToBottom();
+    setTimeout(()=> this.ScrollToBottom(),20);
   }
 
   newMessage(msg: WebSocketObject<Message>) {
@@ -72,21 +81,34 @@ export class MessangesComponent implements OnInit {
         this.msgs.splice(this.msgs.findIndex(m => msg.content.id === m.id), 1);
       }
     }
+    this.dataservice.updateLastMsg(msg);
+    setTimeout(()=> this.ScrollToBottom(),10);
   }
 
-  sendMessage() {
-    let msg = new Message();
-    msg.chat_id = 1;
-    msg.messageType = MessageType.TEXT;
-    msg.status = MessageStatus.RECEIVED;
-    msg.usernameFrom = this.service.username;
-    msg.usernameTo = this.currentChat.users.filter(e => e.username != this.service.username)[0].username;
-    msg.value = this.valueMessage;
+  msg: Message;
+  async sendMessage() {
+    this.msg.chat_id = this.currentChat.id;
+    this.msg.messageType = MessageType.TEXT;
+    // this.msg.status = MessageStatus.RECEIVED;
+    this.msg.usernameFrom = this.service.username;
+    if (!this.currentChat.users.every(u => u.username === this.service.username))
+      this.msg.usernameTo = this.currentChat.users.filter(e => e.username != this.service.username)[0].username;
     let socketMsg = new WebSocketObject<Message>();
-    socketMsg.content = msg;
+    socketMsg.content = this.msg;
     socketMsg.type = WebSocketType.ADD;
     this.service.send(socketMsg);
     console.log(this.msgs);
+    this.msg = new Message();
+  }
+
+  nameChat() {
+    return this.currentChat.users.find(e => e.username != this.service.username)?.username
+  }
+
+
+  dateTime(date: Date) {
+    var newDate = new Date(date).toLocaleString();
+    return newDate;
   }
 
 

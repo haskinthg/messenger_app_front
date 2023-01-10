@@ -7,7 +7,7 @@ export class Message {
     messageType: MessageType;
     value: string;
     status: MessageStatus;
-    date: Date;
+    dateTime: string;
     childMessage: Message;
     usernameFrom: string;
     user: User;

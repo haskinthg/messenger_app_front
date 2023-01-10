@@ -26,8 +26,12 @@ export class MessageService {
   stompClient: any;
   ws_url = "ws";
 
-  getMessageByChatId(id: number) {
-    return this.http.get<Message[]>(this.url + `/chat/${id}`).pipe();
+  getMessagesByChatId(id: number, page: number, size: number) {
+    return this.http.get<Message[]>(this.url + `/chat/${id}/${page}/${size}`).pipe();
+  }
+
+  getCountMsg(id: number) {
+    return this.http.get<number>(this.url + `/chat/${id}`).pipe();
   }
 
   newMessage(msg: WebSocketObject<Message>) {
