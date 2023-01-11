@@ -1,3 +1,4 @@
+import { environment } from './../../../../environments/environment';
 import { MinioService } from './../../../services/minio.service';
 import { AfterViewChecked, Component, Input, OnInit } from '@angular/core';
 import { Chat } from 'src/app/models/chat/chat';
@@ -25,6 +26,10 @@ export class MessangesComponent implements OnInit {
   size: number = 20;
 
   countMsgs: number = 0;
+
+  url_file: string = `${environment.minio_s3_endpoint}:${environment.minio_s3_port}/${environment.minio_s3_bucket_name}/`;
+  text_msg:string = "";
+
 
   onScroll() {
     this.page++;
@@ -88,17 +93,23 @@ export class MessangesComponent implements OnInit {
   msg: Message;
   async sendMessage() {
     this.msg.chat_id = this.currentChat.id;
-    this.msg.messageType = MessageType.TEXT;
-    // this.msg.status = MessageStatus.RECEIVED;
+    this.msg.messageType = MessageType.IMAGE;
+    this.msg.status = MessageStatus.RECEIVED;
     this.msg.usernameFrom = this.service.username;
     if (!this.currentChat.users.every(u => u.username === this.service.username))
       this.msg.usernameTo = this.currentChat.users.filter(e => e.username != this.service.username)[0].username;
     let socketMsg = new WebSocketObject<Message>();
+    this.msg.value = "avatar.png"
     socketMsg.content = this.msg;
     socketMsg.type = WebSocketType.ADD;
     this.service.send(socketMsg);
     console.log(this.msgs);
     this.msg = new Message();
+    this.text_msg = "";
+  }
+
+  checkImg(type: MessageType) {
+    return MessageType.IMAGE === type;
   }
 
   nameChat() {

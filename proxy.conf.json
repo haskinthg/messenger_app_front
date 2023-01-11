@@ -15,13 +15,5 @@
     "pathRewrite": {
       "^/api": ""
     }
-  },
-  "/minio/*": {
-    "target": "http://localhost:",
-    "changeOrigin": false,
-    "secure": false,
-    "pathRewrite": {
-      "^/minio": "/"
-    }
-  },
+  }
 }

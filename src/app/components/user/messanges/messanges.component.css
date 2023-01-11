@@ -118,6 +118,11 @@ textarea {
   overflow-wrap:break-word;
 }
 
+.msg-img {
+  height: 40vh;
+  object-fit: scale-down;
+}
+
 .size-x2 {
   width: 35px;
   height: 35px;
