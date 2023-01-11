@@ -2,7 +2,7 @@
     <div *ngIf="currentChat!=undefined">
         <div class="settings">
             <div class="horizontal-flex">
-                <img class="message-user-photo size-x2" src="https://phonoteka.org/uploads/posts/2021-07/1625161520_50-phonoteka-org-p-zastavka-na-komp-krasivie-zastavki-56.jpg" alt="user-photo">
+                <img class="message-user-photo size-x2" src="{{url_file + chatPhoto()}}" alt="user-photo">
                 <div class="msg-info">{{nameChat()}}</div>
             </div>
             <button mat-icon-button color="basic">
@@ -26,12 +26,12 @@
               <div class="time">{{dateTime(msg.dateTime)}}</div>
               <div class="usermsg">
                 <div class="msg-info">{{msg.user.username}}</div>
-                <img class="message-user-photo" src="https://www.defuscolaw.com/wp-content/uploads/2021/04/QuestionsPersonalInjuryLaw-scaled-e1619806319768.jpeg" alt="">
+                <img class="message-user-photo" src="{{url_file + msg.user.photo}}" alt="">
               </div>
             </mat-card-header>
-            <mat-card-content>
-                <div class="msg-text">{{msg.value}}</div>
-                <img class="msg-img" *ngIf="checkImg(msg.messageType)" src="{{url_file+msg.value}}">
+            <mat-card-content class="content">
+                <div class="msg-text" *ngIf="checkType(msg.messageType) === 'TEXT'">{{msg.value}}</div>
+                <img class="msg-img" *ngIf="checkType(msg.messageType) === 'IMAGE'" src="{{url_file+msg.value}}">
             </mat-card-content>
         </mat-card>
     </div>
@@ -40,7 +40,7 @@
     <mat-card class="msg-sender" *ngIf="currentChat!=undefined">
         <mat-form-field style="margin-bottom: -1.25em; margin-right: 15px;" class="area-form" appearance="outline">
             <mat-label>Сообщение</mat-label>
-            <textarea rows="2" style="overflow: hidden" [(ngModel)]="text.msg" matInput></textarea>
+            <textarea rows="2" style="overflow: hidden" [(ngModel)]="text_msg" (keyup.enter)="sendMessage()" matInput></textarea>
         </mat-form-field>
         <button  mat-fab color="accent" (click)="sendMessage()">
             <mat-icon>send</mat-icon>

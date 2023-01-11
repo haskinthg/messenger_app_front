@@ -15,7 +15,7 @@
       <mat-card class="user-card">
         <mat-card-content class="info">
           <img class="user-photo"
-            src="https://phonoteka.org/uploads/posts/2021-07/1625161520_50-phonoteka-org-p-zastavka-na-komp-krasivie-zastavki-56.jpg"
+            src="{{getUrlMinio() + chatPhoto(chat.users)}}"
             alt="user-photo">
           <div class="user-name">{{nameChat(chat.users)}}</div>
           <div class="last-msg-text">{{lastMessage(chat.lastMessage)}}</div>
@@ -28,7 +28,7 @@
       <mat-card class="user-card">
         <mat-card-content class="info">
           <img class="user-photo"
-            src="https://phonoteka.org/uploads/posts/2021-07/1625161520_50-phonoteka-org-p-zastavka-na-komp-krasivie-zastavki-56.jpg"
+            src="{{getUrlMinio() + user.photo}}"
             alt="user-photo">
           <div class="user-name">{{user.username}}</div>
         </mat-card-content>

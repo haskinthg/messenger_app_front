@@ -13,11 +13,23 @@ export class SendDataService {
 
   public lastMsg$ = new Subject<WebSocketObject<Message>>();
 
+  public newChatMessage$ = new Subject<WebSocketObject<Chat>>();
+
+  public newMessage$ = new Subject<WebSocketObject<Message>>();
+
+  updateNewMessage(msg: WebSocketObject<Message>) {
+    this.newMessage$.next(msg);
+  }
+
   updateChat(chat: Chat) {
     this.chat$.next(chat);
   }
 
-  updateLastMsg(msg:WebSocketObject<Message>) {
+  updateNewChatMessage(chatmsg: WebSocketObject<Chat>) {
+    this.newChatMessage$.next(chatmsg);
+  }
+
+  updateLastMsg(msg: WebSocketObject<Message>) {
     this.lastMsg$.next(msg);
   }
   constructor() { }

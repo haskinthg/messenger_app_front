@@ -6,24 +6,26 @@ import * as SockJS from 'sockjs-client'
 import { MessangesComponent } from '../components/user/messanges/messanges.component';
 import { WebSocketObject } from '../models/webSocketObject';
 import { AuthService } from '../auth/auth.service';
+import { SendDataService } from './send-data.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MessageService {
 
-  constructor(private http: HttpClient, private auth: AuthService) {
+  constructor(private http: HttpClient, private auth: AuthService, private sendDataService: SendDataService) {
     this.initWebSocket();
   }
   username: string = "";
   private url = "api/messages";
-  private messageComp: MessangesComponent;
+  // private messageComp: MessangesComponent;
 
-  setComp(value: MessangesComponent) {
-    this.messageComp = value;
-  }
+  // setComp(value: MessangesComponent) {
+  //   this.messageComp = value;
+  // }
 
   stompClient: any;
+  ws: any;
   ws_url = "ws";
 
   getMessagesByChatId(id: number, page: number, size: number) {
@@ -35,15 +37,16 @@ export class MessageService {
   }
 
   newMessage(msg: WebSocketObject<Message>) {
-    this.messageComp.newMessage(msg);
+    // this.messageComp.newMessage(msg);
+    this.sendDataService.updateNewMessage(msg);
   }
 
   initWebSocket() {
-    var ws = new SockJS(this.ws_url);
-    console.log("url: ", ws.url);
-    this.stompClient = Stomp.over(ws);
+    this.ws = new SockJS(this.ws_url);
+    console.log("url: ", this.ws.url);
+    this.stompClient = Stomp.over(this.ws);
     this.stompClient.connect({}, (frame: Stomp.Frame) => {
-      console.log("connected by websocket", frame);
+      console.log("connected by websocket (messages)", frame);
       this.username = this.auth.LoggedUser.name;
       this.stompClient.subscribe(`/user/${this.username}/messages`, (payload: any) => {
         this.newMessage(JSON.parse(payload.body));

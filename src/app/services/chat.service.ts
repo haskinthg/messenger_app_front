@@ -1,3 +1,5 @@
+import { WebSocketObject } from './../models/webSocketObject';
+import { SendDataService } from 'src/app/services/send-data.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Chat } from '../models/chat/chat';
@@ -10,8 +12,8 @@ import { User } from '../models/user';
 })
 export class ChatService {
 
-  constructor(private http: HttpClient, private auth: AuthService) {
-    //  this.initWebSocket();
+  constructor(private http: HttpClient, private auth: AuthService, private sendDataService: SendDataService) {
+    this.initWebSocket();
     this.username = this.auth.LoggedUser.name;
   }
 
@@ -20,6 +22,7 @@ export class ChatService {
   private url = "api/chats";
   private user_url = "api/users";
   stompClient: any;
+  ws: any;
   ws_url = "ws";
 
   getChats(username: string) {
@@ -35,14 +38,20 @@ export class ChatService {
   }
 
   initWebSocket() {
-    var ws = new SockJS(this.ws_url);
-    console.log("url: ", ws.url);
-    this.stompClient = Stomp.over(ws);
-    this.stompClient.connect({}, this.onConnected, this.onError);
+    this.ws = new SockJS(this.ws_url);
+    console.log("url: ", this.ws.url);
+    this.stompClient = Stomp.over(this.ws);
+    this.stompClient.connect({}, (frame: Stomp.Frame) => {
+      console.log("connected by websocket (chats)", frame);
+      this.username = this.auth.LoggedUser.name;
+      this.stompClient.subscribe(`/user/${this.username}/chats`, (payload: any) => {
+        this.newChatMessage(JSON.parse(payload.body));
+      })
+    }, this.onError);
   }
 
-  private onConnected() {
-    console.log("connected");
+  newChatMessage(msg: WebSocketObject<Chat>){
+    this.sendDataService.updateNewChatMessage(msg);
   }
 
   private onError() {

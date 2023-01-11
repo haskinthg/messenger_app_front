@@ -65,7 +65,7 @@ textarea {
   gap: 10px;
   display: grid;
   grid-template-areas:
-  "usermsg time";
+    "usermsg time";
 }
 
 .usermsg {
@@ -98,7 +98,7 @@ textarea {
 .message-card.right .message-header {
   display: grid;
   grid-template-areas:
-  "time usermsg";
+    "time usermsg";
 }
 
 .msg-info {
@@ -115,12 +115,17 @@ textarea {
 }
 
 .msg-text {
-  overflow-wrap:break-word;
+  overflow-wrap: break-word;
+}
+
+.content {
+  display: flex;
 }
 
 .msg-img {
   height: 40vh;
-  object-fit: scale-down;
+  margin: auto;
+  margin-bottom: 20px!important;
 }
 
 .size-x2 {

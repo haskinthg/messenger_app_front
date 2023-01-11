@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  ws_url: "http://localhost:8080/ws",
-  minio_s3_endpoint: 'http://localhost',
+  // ws_url: "http://localhost:8080/ws",
+  minio_s3_endpoint: 'minio',
   minio_s3_port: '9000',
   minio_s3_use_ssl: true,
   minio_s3_access_key: 'minioadmin',

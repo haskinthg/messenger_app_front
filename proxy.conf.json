@@ -1,4 +1,13 @@
 {
+  "/minio" : {
+    "target": "http://localhost:9000",
+    "changeOrigin": false,
+    "secure": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/api": "/api"
+    }
+  },
   "/api/*": {
     "target": "http://localhost:8080",
     "changeOrigin": false,
