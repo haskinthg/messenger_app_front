@@ -1,0 +1,24 @@
+<div class="main">
+
+  <h1 mat-dialog-title>Профиль {{data.user.username}}</h1>
+  <div mat-dialog-content class="mat-dialog-p" style="display: inline; padding: 0px; margin: auto;">
+
+    <img src="{{url_file + data.user.photo}}" alt="user_photo">
+    <div class="full-width-input message_input_field">
+      <input  id="input__file" type="file" #fileInput ng2FileSelect (onFileSelected)="onFileSelected($event)"
+        hidden="true" />
+      <label for="input__file" class="mat-raised-button" style="overflow: hidden; width:200px!important;">
+        {{file != null ? (file.name): 'Выберите файл' }}
+      </label>
+      <button color="primary" mat-raised-button color="warn" style="margin-left: 10px ; width:100px!important;" *ngIf="file!=null"
+        (click)="delFile()">Удалить</button>
+    </div>
+
+  </div>
+  <div mat-dialog-actions>
+    <button class="right-align" (click)="onSave()" mat-raised-button color="accent"
+      [mat-dialog-close]="data">Сохраить</button>
+    <button mat-raised-button (click)="onNoClick()">Закрыть</button>
+  </div>
+
+</div>

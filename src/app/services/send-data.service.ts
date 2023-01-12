@@ -17,6 +17,25 @@ export class SendDataService {
 
   public newMessage$ = new Subject<WebSocketObject<Message>>();
 
+  public delChat$ = new Subject<WebSocketObject<Chat>>();
+
+  public username$ = new Subject<string>();
+
+
+  public forwardMessage$ = new Subject<Message>();
+
+  updateForward(msg: Message) {
+    this.forwardMessage$.next(msg);
+  }
+
+  updateUsername(un: string) {
+    this.username$.next(un);
+  }
+
+  updateDelChat(msg: WebSocketObject<Chat>) {
+    this.delChat$.next(msg);
+  }
+
   updateNewMessage(msg: WebSocketObject<Message>) {
     this.newMessage$.next(msg);
   }

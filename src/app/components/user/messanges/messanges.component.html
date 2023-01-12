@@ -1,49 +1,119 @@
 <mat-card class="card">
-    <div *ngIf="currentChat!=undefined">
-        <div class="settings">
-            <div class="horizontal-flex">
-                <img class="message-user-photo size-x2" src="{{url_file + chatPhoto()}}" alt="user-photo">
-                <div class="msg-info">{{nameChat()}}</div>
-            </div>
-            <button mat-icon-button color="basic">
-                <mat-icon>more_vert</mat-icon>
-            </button>
-        </div>
-        <mat-divider></mat-divider>
+  <div *ngIf="currentChat!=undefined">
+    <div class="settings">
+      <div class="horizontal-flex">
+        <img class="message-user-photo size-x2" src="{{url_file + chatPhoto()}}" alt="user-photo">
+        <div class="msg-info">{{nameChat()}}</div>
+      </div>
+      <button mat-icon-button color="basic" [matMenuTriggerFor]="moremenu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #moremenu="matMenu">
+        <button (click)="delChatClick()" mat-menu-item>Удалить</button>
+      </mat-menu>
     </div>
-    <div *ngIf="currentChat===undefined"
+    <mat-divider></mat-divider>
+  </div>
+  <div *ngIf="currentChat===undefined"
     style="position: absolute; top:50%; left:40%; color: gray; font-size: 2em; text-align: center;">Выберите чат</div>
 
 
-    <div id="conv" *ngIf="msgs.length!=0"
-    infinite-scroll
-    [infiniteScrollDistance]="distance"
-    [infiniteScrollThrottle]="throttle"
-    (scrolledUp)="onScroll()"
-    [scrollWindow]="false">
-        <mat-card *ngFor="let msg of msgs" class="{{messageSide(msg)}} messange-card">
-            <mat-card-header class="message-header">
-              <div class="time">{{dateTime(msg.dateTime)}}</div>
-              <div class="usermsg">
-                <div class="msg-info">{{msg.user.username}}</div>
-                <img class="message-user-photo" src="{{url_file + msg.user.photo}}" alt="">
-              </div>
-            </mat-card-header>
-            <mat-card-content class="content">
-                <div class="msg-text" *ngIf="checkType(msg.messageType) === 'TEXT'">{{msg.value}}</div>
-                <img class="msg-img" *ngIf="checkType(msg.messageType) === 'IMAGE'" src="{{url_file+msg.value}}">
-            </mat-card-content>
-        </mat-card>
-    </div>
-    <div class="conv"  *ngIf="msgs.length===0"></div>
+  <div id="conv" *ngIf="msgs.length!=0" infinite-scroll [infiniteScrollDistance]="distance"
+    [infiniteScrollThrottle]="throttle" (scrolledUp)="onScroll()" [scrollWindow]="false">
 
-    <mat-card class="msg-sender" *ngIf="currentChat!=undefined">
-        <mat-form-field style="margin-bottom: -1.25em; margin-right: 15px;" class="area-form" appearance="outline">
-            <mat-label>Сообщение</mat-label>
-            <textarea rows="2" style="overflow: hidden" [(ngModel)]="text_msg" (keyup.enter)="sendMessage()" matInput></textarea>
-        </mat-form-field>
-        <button  mat-fab color="accent" (click)="sendMessage()">
-            <mat-icon>send</mat-icon>
-        </button>
+    <mat-card *ngFor="let msg of msgs" class="{{messageSide(msg)}} messange-card">
+      <mat-card-header class="message-header">
+
+        <button mat-icon-button class="replyButton" (click)="changeChildMessageClick(msg)"><mat-icon
+            style="transform: scale(0.5);">reply</mat-icon></button>
+
+        <div class="time">{{dateTime(msg.dateTime)}}</div>
+        <div class="usermsg">
+          <div class="msg-info">{{msg.user.username}}</div>
+          <img class="message-user-photo" src="{{url_file + msg.user.photo}}" alt="">
+        </div>
+      </mat-card-header>
+      <mat-card-content class="content">
+
+        <div class="msg-text" *ngIf="checkType(msg.messageType) === 'TEXT'">{{msg.value}}</div>
+
+        <img class="msg-img" *ngIf="checkType(msg.messageType) === 'IMAGE'" src="{{url_file+msg.value}}">
+
+        <a *ngIf="checkType(msg.messageType) === 'FILE'" href="{{url_file+msg.value}}" class="mat-button center"
+          color="link" download>
+          <mat-icon class="center">download</mat-icon>{{msg.value}}
+        </a>
+
+        <div *ngIf="checkType(msg.messageType) === 'FORWARD'">
+          <div>От: {{msg.childMessage.usernameFrom}}</div>
+          <div class="repMsgVal">
+            <div class="msg-text" style="display: inline;" *ngIf="checkType(msg.childMessage.messageType) === 'TEXT'"> {{msg.childMessage.value}}</div>
+            <img class="msg-img" style="display: inline;" *ngIf="checkType(msg.childMessage.messageType) === 'IMAGE'" src="{{url_file+msg.childMessage.value}}">
+            <a *ngIf="checkType(msg.childMessage.messageType) === 'FILE'" href="{{url_file+msg.childMessage.value}}" class="mat-button center"
+              color="link" download>
+              <mat-icon class="center">download</mat-icon>{{msg.childMessage.value}}
+            </a>
+          </div>
+          <br>
+          <div class="msg-text">{{msg.value}}</div>
+        </div>
+
+        <div *ngIf="checkType(msg.messageType) === 'REPLY'">
+          <div>Ответ пользователю: {{msg.childMessage.usernameFrom}}</div>
+          <div class="repMsgVal">
+            <div class="msg-text" style="display: inline;" *ngIf="checkType(msg.childMessage.messageType) === 'TEXT'"> {{msg.childMessage.value}}</div>
+            <img class="msg-img" style="display: inline;" *ngIf="checkType(msg.childMessage.messageType) === 'IMAGE'" src="{{url_file+msg.childMessage.value}}">
+            <a *ngIf="checkType(msg.childMessage.messageType) === 'FILE'" href="{{url_file+msg.childMessage.value}}" class="mat-button center"
+              color="link" download>
+              <mat-icon class="center">download</mat-icon>{{msg.childMessage.value}}
+            </a>
+          </div>
+          <br>
+          <div class="msg-text">{{msg.value}}</div>
+        </div>
+
+      </mat-card-content>
     </mat-card>
+
+  </div>
+  <div class="conv" *ngIf="msgs.length===0"></div>
+
+  <mat-card class="msg-sender" *ngIf="currentChat!=undefined">
+
+    <div *ngIf="type === 'TEXT'" class="message_input_field">
+      <mat-form-field style="margin-bottom: -1.25em; margin-right: 15px;" class="area-form" appearance="outline">
+        <mat-label>Сообщение</mat-label>
+        <textarea rows="2" style="overflow: hidden" [(ngModel)]="text_msg" (keyup.enter)="sendMessage()"
+          matInput></textarea>
+      </mat-form-field>
+    </div>
+
+    <div *ngIf="type === 'IMAGE'||type === 'FILE'" class="message_input_field">
+      <input id="input__file" type="file" #fileInput ng2FileSelect
+        (onFileSelected)="onFileSelected($event)" hidden="true" />
+      <label for="input__file" class="mat-raised-button">
+        {{file != null ? ('Выбран файл: ' + file.name): 'Выберите файл' }}
+      </label>
+      <button mat-raised-button color="warn" style="margin-left: 10px ; " *ngIf="file!=null"
+        (click)="delFile()">Удалить</button>
+    </div>
+
+    <div *ngIf="childMessage != null" class="replyMessage">
+      <div>От: {{childMessage.usernameFrom}}</div>
+      <div class="repMsgVal">{{childMessage.value}}</div>
+    </div>
+
+
+    <button mat-icon-button [matMenuTriggerFor]="menu">
+      <mat-icon>attach_file</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu" yPosition="above">
+      <button (click)="messangeSenderMenuClick($event)" id="TEXT" mat-menu-item>Текст</button>
+      <button (click)="messangeSenderMenuClick($event)" id="IMAGE" mat-menu-item>Изображение</button>
+      <button (click)="messangeSenderMenuClick($event)" id="FILE" mat-menu-item>Файл</button>
+    </mat-menu>
+    <button mat-fab color="accent" (click)="sendMessage()">
+      <mat-icon>send</mat-icon>
+    </button>
+  </mat-card>
 </mat-card>

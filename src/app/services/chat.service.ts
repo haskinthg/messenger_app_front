@@ -15,6 +15,7 @@ export class ChatService {
   constructor(private http: HttpClient, private auth: AuthService, private sendDataService: SendDataService) {
     this.initWebSocket();
     this.username = this.auth.LoggedUser.name;
+    this.sendDataService.username$.subscribe((data)=>this.username = data);
   }
 
   username: string = "";
@@ -33,13 +34,20 @@ export class ChatService {
     return this.http.get<User[]>(this.user_url + `/${usernameFilter}`).pipe();
   }
 
+  getUserByUsername(username: string) {
+    return this.http.get<User>(this.user_url + `/getUser/${username}`).pipe();
+  }
+
+  updateUser(user: User) {
+    return this.http.post<User>(this.user_url + '/update', user).pipe();
+  }
+
   getChatBy2Users(u1: string, u2: string) {
     return this.http.get<Chat>(this.url + `/${u1}/${u2}`).pipe();
   }
 
   initWebSocket() {
     this.ws = new SockJS(this.ws_url);
-    console.log("url: ", this.ws.url);
     this.stompClient = Stomp.over(this.ws);
     this.stompClient.connect({}, (frame: Stomp.Frame) => {
       console.log("connected by websocket (chats)", frame);
@@ -52,6 +60,10 @@ export class ChatService {
 
   newChatMessage(msg: WebSocketObject<Chat>){
     this.sendDataService.updateNewChatMessage(msg);
+  }
+
+  newChatMessageWebSocket(chatmsg:WebSocketObject<Chat>) {
+    this.stompClient.send('/app/chatmsg',{},JSON.stringify(chatmsg));
   }
 
   private onError() {

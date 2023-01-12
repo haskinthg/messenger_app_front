@@ -13,6 +13,11 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatTableModule} from '@angular/material/table';
 import {MatIconModule} from '@angular/material/icon';
 import {MatDividerModule} from '@angular/material/divider';
+import {MatMenuModule} from '@angular/material/menu'
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { FileUploadModule } from 'ng2-file-upload';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatFormFieldModule} from '@angular/material/form-field'
 
 
 import { LoginComponent } from './components/login/login.component';
@@ -21,7 +26,7 @@ import { ChatsComponent } from './components/user/chats/chats.component';
 import { MessangesComponent } from './components/user/messanges/messanges.component'
 import { UserComponent } from './components/user/user.component';
 import { SessionStorageService } from 'angular-web-storage';
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { ProfileComponent } from './components/user/profile/profile.component';
 
 
 @NgModule({
@@ -31,7 +36,8 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
     RegisterComponent,
     UserComponent,
     ChatsComponent,
-    MessangesComponent
+    MessangesComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,
@@ -46,7 +52,12 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
     AppRoutingModule,
     MatIconModule,
     MatDividerModule,
-    InfiniteScrollModule
+    MatMenuModule,
+    InfiniteScrollModule,
+    FileUploadModule,
+    MatDialogModule,
+    MatFormFieldModule
+
   ],
   providers: [ SessionStorageService ],
   bootstrap: [AppComponent]

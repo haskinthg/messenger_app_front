@@ -1,8 +1,12 @@
 <mat-card class="card">
   <div class="settings-search">
-    <button mat-icon-button color="basic">
+    <button mat-icon-button color="basic" [matMenuTriggerFor]="menu">
       <mat-icon>settings</mat-icon>
     </button>
+    <mat-menu #menu="matMenu" >
+      <button (click)="profile()" mat-menu-item>Профиль</button>
+      <button (click)="logout()" mat-menu-item>Выход</button>
+    </mat-menu>
     <mat-form-field class="search-field" appearance="outline" style="margin-bottom: -1.25em">
       <mat-label>
         <mat-icon>search</mat-icon>

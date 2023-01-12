@@ -1,3 +1,4 @@
+import { SendDataService } from 'src/app/services/send-data.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/auth/auth.service';
@@ -11,7 +12,7 @@ import {Credential} from './../../models/credential'
 
 export class LoginComponent implements OnInit {
 
-  constructor(private router: Router, private authService: AuthService) { }
+  constructor(private router: Router, private authService: AuthService, private sendData: SendDataService) { }
 
   errorAuth: boolean;
   credential: Credential;
@@ -25,7 +26,9 @@ export class LoginComponent implements OnInit {
   login() {
     this.authService.authenticate(this.credential, () => {
       this.errorAuth = true;
+      return;
     });
+    this.sendData.updateUsername(this.credential.username);
   }
 
   toreg() {

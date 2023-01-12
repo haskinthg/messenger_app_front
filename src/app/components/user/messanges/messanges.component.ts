@@ -1,13 +1,13 @@
 import { MESSAGE_TYPE_MAPPER } from './../../../models/message/messageType';
 import { environment } from './../../../../environments/environment';
 import { MinioService } from './../../../services/minio.service';
-import { AfterViewChecked, Component, Input, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, EventEmitter, Input, OnInit } from '@angular/core';
 import { Chat } from 'src/app/models/chat/chat';
 import { Message } from 'src/app/models/message/message';
 import { MessageStatus } from 'src/app/models/message/messageStatus';
 import { MessageType } from 'src/app/models/message/messageType';
 import { WebSocketObject } from 'src/app/models/webSocketObject';
-import { WebSocketType, WEBSOCKETTYPE_MAPPER } from 'src/app/models/WebSocketType';
+import { WebSocketType } from 'src/app/models/WebSocketType';
 import { MessageService } from 'src/app/services/message.service';
 import { SendDataService } from 'src/app/services/send-data.service';
 import { User } from 'src/app/models/user';
@@ -23,12 +23,11 @@ export class MessangesComponent implements OnInit {
     this.minioService.url = (this.service.ws.url as string).replace('4200/ws', '9000');
     this.minioService.initMinio();
     this.url_file = this.minioService.url + `/${environment.minio_s3_bucket_name}/`
-    console.log(this.minioService.url,"to minio");
   }
 
   // для скроллинга
   distance: number = 2;
-  throttle: number = 50;
+  throttle: number = 200;
   page: number = 0;
   size: number = 20;
 
@@ -37,19 +36,22 @@ export class MessangesComponent implements OnInit {
   // url_file: string = `${environment.minio_s3_endpoint}:${environment.minio_s3_port}/${environment.minio_s3_bucket_name}/`;
   url_file: string = '';
 
-  text_msg: string = "";
 
+  // text of message for sending message
+  text_msg: string = "";
+  type: MessageType = MessageType.TEXT;
+
+  // child message for forward or reply
+  childMessage: Message = null;
 
   onScroll() {
     this.page++;
-    console.log("scroll", this.page);
     this.service.getMessagesByChatId(this.currentChat.id, this.page, this.size).subscribe(data => {
       this.msgs = [...data, ...this.msgs];
     });
-    setTimeout(() => console.log(this.msgs), 200);
   }
   //
-
+  // array messages
   msgs: Message[] = [];
 
 
@@ -57,13 +59,19 @@ export class MessangesComponent implements OnInit {
 
   ngOnInit(): void {
     this.dataservice.chat$.subscribe((chat) => this.changedChat(chat))
-    // this.service.setComp(this);
     this.dataservice.newMessage$.subscribe((msg) => this.newMessage(msg));
+    this.dataservice.forwardMessage$.subscribe((msg)=> this.changeChildMessage(msg));
+  }
+
+  changeChildMessage(msg: Message) {
+    this.childMessage = msg;
   }
 
   ScrollToBottom() {
-    const container = document.getElementById("conv");
-    setTimeout(() => (container as HTMLElement).scrollTop = (container as HTMLElement).scrollHeight, 50);
+    setTimeout(() => {
+      const container = document.getElementById("conv");
+      (container as HTMLElement).scrollTop = (container as HTMLElement).scrollHeight;
+    }, 100);
 
   }
 
@@ -78,17 +86,16 @@ export class MessangesComponent implements OnInit {
     this.msg = new Message();
     this.page = 0;
     this.currentChat = chat;
-    console.log(this.page);
     if (this.currentChat != undefined)
       this.service.getMessagesByChatId(this.currentChat.id, this.page, this.size).subscribe(data => {
         this.msgs = data;
       });
-    setTimeout(() => this.ScrollToBottom(), 20);
+    this.ScrollToBottom();
   }
 
   newMessage(msg: WebSocketObject<Message>) {
     if (this.currentChat.id === msg.content.chat_id) {
-      switch (WEBSOCKETTYPE_MAPPER[msg.type]) {
+      switch (msg.type) {
         case WebSocketType.ADD: {
           this.msgs.push(msg.content);
           break;
@@ -102,22 +109,88 @@ export class MessangesComponent implements OnInit {
     setTimeout(() => this.ScrollToBottom(), 10);
   }
 
+  // sending message
   msg: Message;
   async sendMessage() {
+    debugger
+
+    if (this.childMessage != null) {
+      if (this.currentChat.id === this.childMessage.chat_id)
+        this.type = MessageType.REPLY;
+      else this.type = MessageType.FORWARD;
+    }
+
+    let socketMsg = new WebSocketObject<Message>();
+    socketMsg.type = WebSocketType.ADD;
     this.msg.chat_id = this.currentChat.id;
-    this.msg.messageType = MessageType.TEXT;
     this.msg.status = MessageStatus.RECEIVED;
     this.msg.usernameFrom = this.service.username;
     if (!this.currentChat.users.every(u => u.username === this.service.username))
       this.msg.usernameTo = this.currentChat.users.filter(e => e.username != this.service.username)[0].username;
-    let socketMsg = new WebSocketObject<Message>();
-    this.msg.value = this.text_msg;
+    this.msg.messageType = this.type;
+    switch (this.type) {
+      case MessageType.TEXT: {
+        if (this.text_msg != '')
+          this.msg.value = this.text_msg;
+        else return;
+        break;
+      }
+      case MessageType.IMAGE: {
+        if (this.file != null)
+          this.msg.value = this.file.name;
+        else return;
+        break;
+      }
+      case MessageType.FILE: {
+        if (this.file != null)
+          this.msg.value = this.file.name;
+        else return;
+        break;
+      }
+      case MessageType.REPLY: {
+        if (this.childMessage != null) {
+          this.msg.value = this.text_msg;
+          this.msg.childMessage = this.childMessage;
+        }
+        else return;
+        break;
+      }
+      case MessageType.FORWARD: {
+        if (this.childMessage != null) {
+          this.msg.value = this.text_msg;
+          this.msg.childMessage = this.childMessage;
+        }
+        else return;
+        break;
+      }
+    }
     socketMsg.content = this.msg;
-    socketMsg.type = WebSocketType.ADD;
     this.service.send(socketMsg);
-    console.log(this.msgs);
-    this.msg = new Message();
-    this.text_msg = "";
+    if (this.msg.messageType === MessageType.FILE || this.msg.messageType === MessageType.IMAGE) {
+      this.minioService.putObject(this.file);
+      this.delFile();
+    }
+    this.text_msg = '';
+    this.type = MessageType.TEXT;
+    this.childMessage = null as Message;
+    this.dataservice.updateForward(null as Message);
+  }
+
+  delChatClick() {
+    let msg = new WebSocketObject<Chat>();
+    msg.content = Object.assign({}, this.currentChat);
+    msg.type = WebSocketType.DELETE;
+    this.currentChat = null as Chat;
+    this.dataservice.updateDelChat(msg);
+  }
+
+  messangeSenderMenuClick(event: Event) {
+    this.type = (event.target as HTMLElement).id as MessageType;
+  }
+
+  changeChildMessageClick(msg: Message) {
+    this.dataservice.updateForward(msg);
+    this.childMessage = msg;
   }
 
   nameChat() {
@@ -137,4 +210,17 @@ export class MessangesComponent implements OnInit {
   chatPhoto() {
     return (this.currentChat.users.find(u => u.username != this.service.username) as User).photo;
   }
+
+
+  file: File;
+  public onFileSelected(event: EventEmitter<File[]>) {
+    this.file = event[0];
+    // this.minioService.putObject(this.file);
+  }
+
+  delFile() {
+    (document.getElementById('input__file') as HTMLInputElement).value = '';
+    this.file = null as File;
+  }
+
 }

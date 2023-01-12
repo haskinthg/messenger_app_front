@@ -1,3 +1,7 @@
+import { MinioService } from './../../../services/minio.service';
+import { UserFilename } from './../../../models/UserFilename';
+import { ProfileComponent } from './../profile/profile.component';
+import { AuthService } from './../../../auth/auth.service';
 import { environment } from './../../../../environments/environment.prod';
 import { WEBSOCKETTYPE_MAPPER } from './../../../models/WebSocketType';
 import { WebSocketObject } from './../../../models/webSocketObject';
@@ -9,6 +13,7 @@ import { User } from 'src/app/models/user';
 import { ChatService } from 'src/app/services/chat.service';
 import { SendDataService } from 'src/app/services/send-data.service';
 import { WebSocketType } from 'src/app/models/WebSocketType';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-chats',
@@ -17,31 +22,41 @@ import { WebSocketType } from 'src/app/models/WebSocketType';
 })
 export class ChatsComponent implements OnInit {
 
-  constructor(private service: ChatService, private dataservice: SendDataService) {
+  constructor(private service: ChatService,
+    private dataservice: SendDataService,
+    private auth: AuthService,
+    public dialog: MatDialog,
+    private minio: MinioService) {
   }
 
   search: string = '';
-
   username: string = "";
   // users: ShortUser[] = []
 
   @Output() onChangedChat = new EventEmitter<Chat>()
-
   chats: Chat[] = [];
-
   users: User[] = [];
+
+  currentChat: Chat;
 
   ngOnInit(): void {
     this.username = this.service.username;
     this.dataservice.lastMsg$.subscribe((msg) => this.getLastMsg(msg));
     this.dataservice.newChatMessage$.subscribe((chatmsg) => this.newChatMessage(chatmsg));
+    this.dataservice.delChat$.subscribe((chatmsg) => this.deleteChat(chatmsg));
+    this.dataservice.chat$.subscribe((chat) => this.currentChat = chat);
     this.service.getChats(this.username).subscribe(data => {
       this.chats = data;
     });
   }
 
+  deleteChat(chatmsg: WebSocketObject<Chat>) {
+    this.service.newChatMessageWebSocket(chatmsg);
+    this.chats.splice(this.chats.findIndex(c => c.id === chatmsg.content.id), 1);
+  }
+
   newChatMessage(msg: WebSocketObject<Chat>) {
-    if (!this.chats.some(c=> c.id ===msg.content.id)) {
+    if (!this.chats.some(c => c.id === msg.content.id)) {
       switch (WEBSOCKETTYPE_MAPPER[msg.type]) {
         case WebSocketType.ADD: {
           this.chats = [msg.content, ...this.chats];
@@ -57,6 +72,35 @@ export class ChatsComponent implements OnInit {
         }
       }
     }
+  }
+
+  profile() {
+    this.service.getUserByUsername(this.username).subscribe(u => {
+      const d: UserFilename = new UserFilename;
+      d.user = u;
+      d.url = environment.minio_s3_endpoint + `/${environment.minio_s3_bucket_name}/`;
+      const dialogProfile = this.dialog.open(ProfileComponent, {
+        width: '400px',
+        data: d
+      });
+      console.log(d);
+      dialogProfile.afterClosed().subscribe((result: UserFilename) => {
+        console.log(result);
+        if (result != null) {
+          console.log(result);
+          this.minio.putObject(result.file);
+          this.service.updateUser(result.user).subscribe(dat => {
+            console.log(dat, 'с сервера');
+            this.users[(this.users.findIndex(c => c.id === dat.id))] = dat;
+          });
+        }
+      });
+    });
+
+  }
+
+  logout() {
+    this.auth.logout();
   }
 
   openChat(chat: Chat) {
@@ -75,17 +119,14 @@ export class ChatsComponent implements OnInit {
     return users.find(u => u.username != this.username)?.username;
   }
 
-  chatPhoto(users:User[]) {
-    // console.log(users.find(u => u.username != this.username));
+  chatPhoto(users: User[]) {
     return (users.find(u => u.username != this.username) as User).photo;
   }
 
   getFilterUsers(name: Event) {
     let filter = (name.target as HTMLInputElement).value;
-    console.log(filter);
     this.service.findUsersByFilter(filter).subscribe(data => {
       this.users = data;
-      console.log(data);
     })
   }
 

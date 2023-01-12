@@ -14,6 +14,7 @@ import { SendDataService } from './send-data.service';
 export class MessageService {
 
   constructor(private http: HttpClient, private auth: AuthService, private sendDataService: SendDataService) {
+    this.sendDataService.username$.subscribe((username)=>this.username = username);
     this.initWebSocket();
   }
   username: string = "";
@@ -27,6 +28,7 @@ export class MessageService {
   stompClient: any;
   ws: any;
   ws_url = "ws";
+
 
   getMessagesByChatId(id: number, page: number, size: number) {
     return this.http.get<Message[]>(this.url + `/chat/${id}/${page}/${size}`).pipe();
@@ -43,7 +45,6 @@ export class MessageService {
 
   initWebSocket() {
     this.ws = new SockJS(this.ws_url);
-    console.log("url: ", this.ws.url);
     this.stompClient = Stomp.over(this.ws);
     this.stompClient.connect({}, (frame: Stomp.Frame) => {
       console.log("connected by websocket (messages)", frame);
