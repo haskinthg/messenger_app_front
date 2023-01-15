@@ -60,7 +60,7 @@ export class MessangesComponent implements OnInit {
   ngOnInit(): void {
     this.dataservice.chat$.subscribe((chat) => this.changedChat(chat))
     this.dataservice.newMessage$.subscribe((msg) => this.newMessage(msg));
-    this.dataservice.forwardMessage$.subscribe((msg)=> this.changeChildMessage(msg));
+    this.dataservice.forwardMessage$.subscribe((msg)=> this.childMessage = msg);
   }
 
   changeChildMessage(msg: Message) {
@@ -112,7 +112,6 @@ export class MessangesComponent implements OnInit {
   // sending message
   msg: Message;
   async sendMessage() {
-    debugger
 
     if (this.childMessage != null) {
       if (this.currentChat.id === this.childMessage.chat_id)
@@ -165,11 +164,11 @@ export class MessangesComponent implements OnInit {
       }
     }
     socketMsg.content = this.msg;
-    this.service.send(socketMsg);
     if (this.msg.messageType === MessageType.FILE || this.msg.messageType === MessageType.IMAGE) {
       this.minioService.putObject(this.file);
       this.delFile();
     }
+    this.service.send(socketMsg);
     this.text_msg = '';
     this.type = MessageType.TEXT;
     this.childMessage = null as Message;
@@ -182,6 +181,13 @@ export class MessangesComponent implements OnInit {
     msg.type = WebSocketType.DELETE;
     this.currentChat = null as Chat;
     this.dataservice.updateDelChat(msg);
+  }
+
+  delMessageClick(msg: Message) {
+    let socketMsg = new WebSocketObject<Message>();
+    socketMsg.type = WebSocketType.DELETE;
+    socketMsg.content = msg;
+    this.service.send(socketMsg);
   }
 
   messangeSenderMenuClick(event: Event) {
@@ -221,6 +227,11 @@ export class MessangesComponent implements OnInit {
   delFile() {
     (document.getElementById('input__file') as HTMLInputElement).value = '';
     this.file = null as File;
+  }
+
+
+  rekurs(msg: Message) {
+    return
   }
 
 }
