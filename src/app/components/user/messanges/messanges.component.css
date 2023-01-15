@@ -143,12 +143,14 @@ textarea {
 .replyButton {
   position: absolute;
   left: -30px;
+  top: 20px;
 }
 
 .left .replyButton {
   position: absolute;
   left: unset;
   right: -30px;
+  top: 20px;
 }
 
 .uploadButton:hover {

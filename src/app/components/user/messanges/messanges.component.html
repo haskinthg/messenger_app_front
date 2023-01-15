@@ -24,6 +24,8 @@
     <mat-card *ngFor="let msg of msgs" class="{{messageSide(msg)}} messange-card">
       <mat-card-header class="message-header">
 
+        <button mat-icon-button class="replyButton" style="top: -10px" (click)="delMessageClick(msg)"><mat-icon
+            style="transform: scale(0.5);">close</mat-icon></button>
         <button mat-icon-button class="replyButton" (click)="changeChildMessageClick(msg)"><mat-icon
             style="transform: scale(0.5);">reply</mat-icon></button>
 
@@ -47,12 +49,28 @@
         <div *ngIf="checkType(msg.messageType) === 'FORWARD'">
           <div>От: {{msg.childMessage.usernameFrom}}</div>
           <div class="repMsgVal">
-            <div class="msg-text" style="display: inline;" *ngIf="checkType(msg.childMessage.messageType) === 'TEXT'"> {{msg.childMessage.value}}</div>
-            <img class="msg-img" style="display: inline;" *ngIf="checkType(msg.childMessage.messageType) === 'IMAGE'" src="{{url_file+msg.childMessage.value}}">
-            <a *ngIf="checkType(msg.childMessage.messageType) === 'FILE'" href="{{url_file+msg.childMessage.value}}" class="mat-button center"
-              color="link" download>
+            <div class="msg-text" style="display: inline;" *ngIf="checkType(msg.childMessage.messageType) === 'TEXT'">
+              {{msg.childMessage.value}}</div>
+            <img class="msg-img" style="display: inline;" *ngIf="checkType(msg.childMessage.messageType) === 'IMAGE'"
+              src="{{url_file+msg.childMessage.value}}">
+            <a *ngIf="checkType(msg.childMessage.messageType) === 'FILE'" href="{{url_file+msg.childMessage.value}}"
+              class="mat-button center" color="link" download>
               <mat-icon class="center">download</mat-icon>{{msg.childMessage.value}}
             </a>
+            <div
+              *ngIf="checkType(msg.childMessage.messageType) === 'REPLY' || checkType(msg.childMessage.messageType) === 'FORWARD'"
+              class="repMsgVal">
+              <div class="msg-text" style="display: inline;"
+                *ngIf="checkType(msg.childMessage.childMessage.messageType) === 'TEXT'">
+                {{msg.childMessage.value}}</div>
+              <img class="msg-img" style="display: inline;"
+                *ngIf="checkType(msg.childMessage.childMessage.messageType) === 'IMAGE'"
+                src="{{url_file+msg.childMessage.childMessage.value}}">
+              <a *ngIf="checkType(msg.childMessage.messageType) === 'FILE'"
+                href="{{url_file+msg.childMessage.childMessage.value}}" class="mat-button center" color="link" download>
+                <mat-icon class="center">download</mat-icon>{{msg.childMessage.childMessage.value}}
+              </a>
+            </div>
           </div>
           <br>
           <div class="msg-text">{{msg.value}}</div>
@@ -61,12 +79,28 @@
         <div *ngIf="checkType(msg.messageType) === 'REPLY'">
           <div>Ответ пользователю: {{msg.childMessage.usernameFrom}}</div>
           <div class="repMsgVal">
-            <div class="msg-text" style="display: inline;" *ngIf="checkType(msg.childMessage.messageType) === 'TEXT'"> {{msg.childMessage.value}}</div>
-            <img class="msg-img" style="display: inline;" *ngIf="checkType(msg.childMessage.messageType) === 'IMAGE'" src="{{url_file+msg.childMessage.value}}">
-            <a *ngIf="checkType(msg.childMessage.messageType) === 'FILE'" href="{{url_file+msg.childMessage.value}}" class="mat-button center"
-              color="link" download>
+            <div class="msg-text" style="display: inline;" *ngIf="checkType(msg.childMessage.messageType) === 'TEXT'">
+              {{msg.childMessage.value}}</div>
+            <img class="msg-img" style="display: inline;" *ngIf="checkType(msg.childMessage.messageType) === 'IMAGE'"
+              src="{{url_file+msg.childMessage.value}}">
+            <a *ngIf="checkType(msg.childMessage.messageType) === 'FILE'" href="{{url_file+msg.childMessage.value}}"
+              class="mat-button center" color="link" download>
               <mat-icon class="center">download</mat-icon>{{msg.childMessage.value}}
             </a>
+            <div
+              *ngIf="checkType(msg.childMessage.messageType) === 'REPLY' || checkType(msg.childMessage.messageType) === 'FORWARD'"
+              class="repMsgVal">
+              <div class="msg-text" style="display: inline;"
+                *ngIf="checkType(msg.childMessage.childMessage.messageType) === 'TEXT'">
+                {{msg.childMessage.value}}</div>
+              <img class="msg-img" style="display: inline;"
+                *ngIf="checkType(msg.childMessage.childMessage.messageType) === 'IMAGE'"
+                src="{{url_file+msg.childMessage.childMessage.value}}">
+              <a *ngIf="checkType(msg.childMessage.messageType) === 'FILE'"
+                href="{{url_file+msg.childMessage.childMessage.value}}" class="mat-button center" color="link" download>
+                <mat-icon class="center">download</mat-icon>{{msg.childMessage.childMessage.value}}
+              </a>
+            </div>
           </div>
           <br>
           <div class="msg-text">{{msg.value}}</div>
@@ -89,8 +123,8 @@
     </div>
 
     <div *ngIf="type === 'IMAGE'||type === 'FILE'" class="message_input_field">
-      <input id="input__file" type="file" #fileInput ng2FileSelect
-        (onFileSelected)="onFileSelected($event)" hidden="true" />
+      <input id="input__file" type="file" #fileInput ng2FileSelect (onFileSelected)="onFileSelected($event)"
+        hidden="true" />
       <label for="input__file" class="mat-raised-button">
         {{file != null ? ('Выбран файл: ' + file.name): 'Выберите файл' }}
       </label>
